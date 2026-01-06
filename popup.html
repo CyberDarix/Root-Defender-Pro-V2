@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --accent: #238636; --text: #c9d1d9; --blue: #58a6ff; }
+        body { width: 350px; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; overflow: hidden; }
+        
+        /* Header avec Avatar */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-bottom: 15px; }
+        .logo { font-weight: 800; color: var(--blue); font-size: 14px; }
+        .user-badge { background: #8957e5; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; border: 2px solid rgba(255,255,255,0.1); }
+
+        /* Status Hero */
+        .status-hero { text-align: center; padding: 20px; background: var(--card); border-radius: 12px; border: 1px solid #30363d; margin-bottom: 15px; position: relative; }
+        .shield { font-size: 50px; margin-bottom: 10px; display: block; }
+        .status-title { font-size: 18px; font-weight: bold; color: var(--accent); }
+        .status-desc { font-size: 11px; color: #8b949e; }
+
+        /* Grille de Protection */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .card { background: var(--card); padding: 10px; border-radius: 8px; border: 1px solid #30363d; text-align: center; }
+        .card i { font-size: 20px; margin-bottom: 5px; display: block; }
+        .card span { font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        
+        /* Toggle Switch Pro */
+        .switch { width: 30px; height: 16px; background: #30363d; border-radius: 10px; margin: 8px auto 0; position: relative; cursor: pointer; }
+        .switch.on { background: var(--accent); }
+        .switch::after { content: ''; position: absolute; width: 12px; height: 12px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.2s; }
+        .switch.on::after { left: 16px; }
+
+        /* MENU PROFIL - REPARÉ */
+        #profileMenu {
+            display: none; position: fixed; top: 55px; right: 15px;
+            background: #1c2128; border: 1px solid #444c56; border-radius: 10px;
+            padding: 15px; width: 200px; z-index: 99999; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">ROOT-DEFENDER <span style="color:var(--accent)">PRO</span></div>
+        <div class="user-badge" id="openMenu">HE</div>
+    </div>
+
+    <div id="profileMenu">
+        <div style="font-size: 11px; color: #8b949e;">Compte</div>
+        <div style="font-size: 13px; font-weight: bold; margin: 5px 0 10px; color: var(--blue);">kacemhenni4@gmail.com</div>
+        <div style="height: 1px; background: #30363d; margin-bottom: 10px;"></div>
+        <div id="logout" style="color: #f85149; font-size: 13px; font-weight: bold; cursor: pointer;">🚪 Déconnexion</div>
+    </div>
+
+    <div class="status-hero">
+        <span class="shield">🛡️</span>
+        <div class="status-title" id="mainStatus">Analyse...</div>
+        <div class="status-desc" id="subStatus">Vérification de la sécurité du site</div>
+    </div>
+
+    <div class="grid">
+        <div class="card"><i>🚫</i><span>Ads</span><div class="switch on"></div></div>
+        <div class="card"><i>🦠</i><span>Malware</span><div class="switch on"></div></div>
+        <div class="card"><i>🕵️</i><span>Scam</span><div class="switch on"></div></div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

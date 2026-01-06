@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { width: 320px; padding: 20px; background: #0f172a; color: white; font-family: sans-serif; text-align: center; }
+        .card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        h2 { color: #10b981; margin-bottom: 5px; font-size: 18px; }
+        p { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+        input { width: 90%; padding: 12px; margin: 8px 0; background: #1e293b; border: 1px solid #334155; border-radius: 8px; color: white; outline: none; }
+        input:focus { border-color: #10b981; }
+        .btn { width: 100%; padding: 12px; background: #10b981; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .toggle-link { font-size: 12px; color: #10b981; cursor: pointer; margin-top: 15px; text-decoration: underline; display: block; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 id="formTitle">ROOT-DEFENDER PRO</h2>
+        <p id="formSub">Sécurisez votre navigation</p>
+        
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="pass" placeholder="Mot de passe" required>
+        
+        <button class="btn" id="mainBtn">Se connecter</button>
+        
+        <span class="toggle-link" id="toggleBtn">Pas de compte ? Créer un compte</span>
+    </div>
+    <script src="auth.js"></script>
+</body>
+</html>
