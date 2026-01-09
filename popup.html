@@ -3,72 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        :root { --neon: #00ff88; --bg: #0a0b10; --glass: rgba(255, 255, 255, 0.03); }
+        :root { --neon: #00ff88; --bg: #0a0b10; --glass: rgba(255, 255, 255, 0.03); --error: #ff4444; --blue: #3498db; }
         body { width: 340px; background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; border: 1px solid #1f2937; }
-        .screen { display: none; padding: 20px; }
-        .active { display: block; animation: fadeIn 0.4s ease; }
         
-        /* Menu Profil */
-        .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid #1f2937; }
-        #openMenu { background: var(--neon); color: black; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        #menu_profil { display: none; position: absolute; right: 20px; top: 45px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.5); min-width: 120px; }
-        .menu-item { padding: 10px 15px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #30363d; }
-        .menu-item:hover { background: var(--glass); color: var(--neon); }
-
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #161b22; border: 1px solid #30363d; color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--neon); }
-        button { width: 100%; padding: 14px; background: var(--neon); border: none; color: black; font-weight: 800; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        button:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(0,255,136,0.4); }
-
-        .status-box { text-align: center; padding: 20px; background: var(--glass); border-radius: 15px; border: 1px solid rgba(0,255,136,0.1); margin-bottom: 15px; }
-        .shield-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        .card { background: var(--glass); padding: 15px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1f2937; font-size: 14px; }
+        /* Animation d'entrée des pages */
+        .screen { display: none; padding: 20px; animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .active { display: block; }
         
-        .changer { width: 34px; height: 18px; background: #30363d; border-radius: 10px; position: relative; cursor: pointer; transition: 0.3s; }
-        .changer:after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADER & BOUTON K PULSANT */
+        .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #1f2937; position: relative; }
+        
+        #openMenu { 
+            background: var(--neon); color: black; border-radius: 50%; width: 28px; height: 28px; 
+            display: flex; align-items: center; justify-content: center; font-weight: 900; 
+            cursor: pointer; text-transform: uppercase; transition: 0.3s;
+            animation: pulseK 2s infinite;
+        }
+        
+        @keyframes pulseK {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
+        #menu_profil { display: none; position: absolute; right: 20px; top: 45px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.8); min-width: 140px; overflow: hidden; animation: fadeIn 0.2s ease; }
+        .menu-item { padding: 12px 15px; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .menu-item:hover { background: var(--neon); color: black; font-weight: bold; }
+
+        /* FORMULAIRE & ERREUR */
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #161b22; border: 1px solid #30363d; color: white; border-radius: 8px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--neon); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+        .error-msg { color: var(--error); font-size: 11px; text-align: center; margin-bottom: 10px; font-weight: bold; display: none; }
+        
+        button { width: 100%; padding: 14px; background: var(--neon); border: none; color: black; font-weight: 900; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.4s; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { letter-spacing: 2px; box-shadow: 0 0 20px var(--neon); }
+
+        /* DASHBOARD & SCANNER IA */
+        .status-box { 
+            position: relative; text-align: center; padding: 25px; background: var(--glass); 
+            border-radius: 20px; border: 1px solid rgba(0,255,136,0.1); margin-bottom: 15px; 
+            overflow: hidden; 
+        }
+        
+        /* Ligne de scan laser */
+        .status-box::before {
+            content: ''; position: absolute; top: -50%; left: 0; width: 100%; height: 4px;
+            background: var(--neon); box-shadow: 0 0 15px var(--neon);
+            animation: scanning 3s linear infinite; opacity: 0.3;
+        }
+        
+        @keyframes scanning {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .shield-icon { font-size: 45px; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 10px var(--blue)); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* CARDS & TOGGLES */
+        .card { background: var(--glass); padding: 15px; border-radius: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1f2937; font-size: 14px; transition: 0.3s; }
+        .card:hover { background: rgba(255,255,255,0.06); border-color: var(--neon); transform: scale(1.02); }
+        
+        .changer { width: 38px; height: 20px; background: #30363d; border-radius: 12px; position: relative; cursor: pointer; transition: 0.4s; }
+        .changer:after { content: ''; position: absolute; width: 16px; height: 16px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.4s; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
         .changer.sur { background: var(--neon); }
-        .changer.sur:after { left: 18px; }
+        .changer.sur:after { left: 20px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* FOOTER PROTECTION COMPLÈTE */
+        .footer-pro { display: flex; justify-content: center; margin-top: 20px; padding-bottom: 10px; }
+        .btn-pro { 
+            background: linear-gradient(90deg, rgba(0,255,136,0.1), transparent); 
+            border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 12px; 
+            padding: 12px 20px; cursor: pointer; display: flex; align-items: center; 
+            gap: 10px; transition: 0.3s; width: 85%; justify-content: center;
+        }
+        .btn-pro:hover { border-color: var(--neon); background: rgba(0, 255, 136, 0.2); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .btn-pro span { color: white; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* SECCOUSSE ERREUR IA */
+        .shake { animation: shakeAnim 0.4s ease-in-out; border-color: var(--error) !important; }
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div id="page_login" class="screen active">
-        <h2 style="color:var(--neon); text-align:center; font-size: 18px;">CONNEXION AI</h2>
-        <input type="text" id="log_user" placeholder="Pseudo">
-        <input type="password" id="log_pass" placeholder="Mot de passe">
-        <button id="btn_login">ACCÈS SÉCURISÉ</button>
-        <p style="text-align:center; font-size:12px; margin-top: 15px; color: #8b949e;">Nouveau ? <span id="to_reg" style="color:var(--neon); cursor:pointer; font-weight: bold;">Créer un compte</span></p>
+    <div id="page_login" class="screen">
+        <h2 style="color:var(--neon); text-align:center; font-size: 20px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,136,0.3);">CONNEXION AI</h2>
+        <div id="login_err" class="error-msg">ACCÈS REFUSÉ : INTROUVABLE</div>
+        <input type="text" id="log_user" placeholder="Identifiant réseau">
+        <input type="password" id="log_pass" placeholder="Clé d'accès">
+        <button id="btn_login_submit">DÉVERROUILLER</button>
+        <p style="text-align:center; font-size:12px; margin-top: 20px; color: #8b949e;">Accès restreint ? <span id="link_to_reg" style="color:var(--neon); cursor:pointer; font-weight: 900;">S'enregistrer</span></p>
     </div>
 
     <div id="page_reg" class="screen">
-        <h2 style="color:var(--neon); text-align:center; font-size: 18px;">INSCRIPTION PRO</h2>
-        <input type="text" id="reg_user" placeholder="Choisir un pseudo">
-        <input type="password" id="reg_pass" placeholder="Créer un mot de passe">
-        <button id="btn_reg">CRÉER & ACTIVER</button>
-        <p style="text-align:center; font-size:12px; margin-top: 15px; cursor:pointer; color: #8b949e;" id="to_log">Retour à la connexion</p>
+        <h2 style="color:var(--neon); text-align:center; font-size: 20px; letter-spacing: 2px;">CREATION PRO</h2>
+        <div id="reg_err" class="error-msg">SAISIE INVALIDE</div>
+        <input type="text" id="reg_user" placeholder="Pseudo utilisateur">
+        <input type="password" id="reg_pass" placeholder="Mot de passe sécurisé">
+        <button id="btn_reg_submit">ACTIVER LE PROFIL</button>
+        <p style="text-align:center; font-size:12px; margin-top: 20px; cursor:pointer; color: #8b949e;" id="link_to_log">Retour au terminal</p>
     </div>
 
     <div id="page_dash" class="screen">
         <div class="header-bar">
-            <span style="font-size:11px; font-weight:bold; letter-spacing:1px;">ROOT DEFENDER <span style="color:var(--neon)">PRO</span></span>
-            <div id="openMenu">U</div>
+            <span style="font-size:11px; font-weight:900; letter-spacing:1.5px;">ROOT DEFENDER <span style="color:var(--neon)">PRO</span></span>
+            <div id="openMenu">K</div>
             <div id="menu_profil">
-                <div class="menu-item" id="user_name_display" style="border-bottom: 1px solid #30363d;">Utilisateur</div>
-                <div class="menu-item" id="deconnexion" style="color:#ff4444; border: none;">Déconnexion</div>
+                <div class="menu-item" id="user_name_display" style="border-bottom: 1px solid #30363d; pointer-events: none; opacity: 0.6;">Profil</div>
+                <div class="menu-item" id="btn_logout" style="color:var(--error); font-weight: 900;">DÉCONNEXION</div>
             </div>
         </div>
 
         <div class="status-box">
             <span class="shield-icon">🛡️</span>
-            <div id="mainStatus" style="font-weight:bold; font-size:18px; color: #fff;">Analyse...</div>
-            <div id="sous-statut" style="font-size:12px; opacity:0.6;">Vérification des protocoles</div>
+            <div id="mainStatus" style="font-weight:900; font-size:22px; color: var(--neon); letter-spacing: 1px;">SÉCURISÉ</div>
+            <div id="sous-statut" style="font-size:11px; opacity:0.6; margin-top: 5px; text-transform: uppercase;">IA de surveillance active</div>
         </div>
 
-        <div class="card"><span>Protection Web</span><div class="changer sur"></div></div>
-        <div class="card"><span>Anti-Traqueurs</span><div class="changer sur"></div></div>
-        <div class="card"><span>Mode QUANTUM</span><div class="changer"></div></div>
+        <div class="card"><span>Protection Temps Réel</span><div class="changer sur" id="sw_web"></div></div>
+        <div class="card"><span>Anonymat Quantum</span><div class="changer sur" id="sw_track"></div></div>
+        <div class="card"><span>Mode Furtif AI</span><div class="changer" id="sw_quantum"></div></div>
+
+        <div class="footer-pro">
+            <div class="btn-pro" id="btn_site_link">
+                <span style="font-size: 20px; filter: drop-shadow(0 0 5px var(--neon));">🛡️</span>
+                <span>Protection complète</span>
+            </div>
+        </div>
     </div>
 
     <script src="popup.js"></script>

@@ -1,109 +1,115 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Éléments de l'interface ---
-    const screens = {
-        login: document.getElementById('page_login'),
-        reg: document.getElementById('page_reg'),
-        dash: document.getElementById('page_dash')
-    };
-
-    function basculerPage(nom) {
-        Object.values(screens).forEach(s => { if(s) s.classList.remove('active'); });
-        if(screens[nom]) screens[nom].classList.add('active');
-        if(nom === 'dash') lancerAnimationElite();
+    
+    // --- 1. MÉMOIRE DES BOUTONS (SMART STATE) ---
+    function saveAppState() {
+        const state = {
+            web: document.getElementById('sw_web').classList.contains('sur'),
+            track: document.getElementById('sw_track').classList.contains('sur'),
+            quantum: document.getElementById('sw_quantum').classList.contains('sur')
+        };
+        chrome.storage.local.set({ 'toggles': state });
     }
 
-    // --- Vérification de session au démarrage ---
-    chrome.storage.local.get(['estConnecte', 'pseudo'], function(data) {
-        if (data.estConnecte === true && data.pseudo) {
-            activerDashboard(data.pseudo);
+    // --- 2. GESTION DU MENU K ---
+    const btnK = document.getElementById('openMenu');
+    const menu = document.getElementById('menu_profil');
+    
+    btnK?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    });
+    document.addEventListener('click', () => { if(menu) menu.style.display = 'none'; });
+
+    // --- 3. IA DE CONNEXION & VÉRIFICATION ---
+    const loginErr = document.getElementById('login_err');
+
+    document.getElementById('btn_login_submit')?.addEventListener('click', () => {
+        const user = document.getElementById('log_user').value.trim();
+        const pass = document.getElementById('log_pass').value.trim();
+        const inputUser = document.getElementById('log_user');
+
+        chrome.storage.local.get(['comptes'], (data) => {
+            const comptes = data.comptes || {};
+
+            // VÉRIFICATION INTELLIGENTE
+            if (comptes[user] && comptes[user] === pass) {
+                chrome.storage.local.set({ 'estConnecte': true, 'pseudo': user }, () => {
+                    location.reload(); 
+                });
+            } else {
+                // EFFET ERREUR (IA REJET)
+                loginErr.style.display = 'block';
+                inputUser.classList.add('shake');
+                setTimeout(() => { 
+                    inputUser.classList.remove('shake');
+                    loginErr.style.display = 'none';
+                }, 1500);
+            }
+        });
+    });
+
+    // --- 4. INSCRIPTION PRO (ENREGISTREMENT) ---
+    document.getElementById('btn_reg_submit')?.addEventListener('click', () => {
+        const user = document.getElementById('reg_user').value.trim();
+        const pass = document.getElementById('reg_pass').value.trim();
+
+        if (user !== "" && pass !== "") {
+            chrome.storage.local.get(['comptes'], (data) => {
+                let comptes = data.comptes || {};
+                comptes[user] = pass; // On enregistre le nouveau compte
+
+                chrome.storage.local.set({ 
+                    'comptes': comptes, 
+                    'estConnecte': true, 
+                    'pseudo': user 
+                }, () => {
+                    location.reload(); 
+                });
+            });
         }
     });
 
-    // --- Navigation (S'inscrire / Retour) ---
-    if(document.getElementById('to_reg')) {
-        document.getElementById('to_reg').addEventListener('click', () => basculerPage('reg'));
-    }
-    if(document.getElementById('to_log')) {
-        document.getElementById('to_log').addEventListener('click', () => basculerPage('login'));
-    }
+    // --- 5. LOGOUT ---
+    document.getElementById('btn_logout')?.addEventListener('click', () => {
+        chrome.storage.local.set({ 'estConnecte': false }, () => { location.reload(); });
+    });
 
-    // --- Action Inscription (Correction ID btn_reg) ---
-    const btnReg = document.getElementById('btn_reg');
-    if(btnReg) {
-        btnReg.addEventListener('click', function() {
-            const user = document.getElementById('reg_user').value.trim();
-            const pass = document.getElementById('reg_pass').value.trim();
-            if(user && pass) {
-                chrome.storage.local.set({
-                    'estConnecte': true,
-                    'pseudo': user,
-                    'password': pass
-                }, () => activerDashboard(user));
+    // NAVIGATION
+    document.getElementById('link_to_reg')?.addEventListener('click', () => {
+        document.getElementById('page_login').classList.remove('active');
+        document.getElementById('page_reg').classList.add('active');
+    });
+    document.getElementById('link_to_log')?.addEventListener('click', () => {
+        document.getElementById('page_reg').classList.remove('active');
+        document.getElementById('page_login').classList.add('active');
+    });
+
+    // --- 6. CHARGEMENT AU DÉMARRAGE ---
+    chrome.storage.local.get(['estConnecte', 'pseudo', 'toggles'], (data) => {
+        if (data.estConnecte) {
+            document.getElementById('page_dash').classList.add('active');
+            if(data.pseudo) {
+                document.getElementById('openMenu').innerText = data.pseudo.charAt(0).toUpperCase();
+                document.getElementById('user_name_display').innerText = data.pseudo;
             }
-        });
-    }
-
-    // --- Action Connexion ---
-    const btnLogin = document.getElementById('btn_login');
-    if(btnLogin) {
-        btnLogin.addEventListener('click', function() {
-            const user = document.getElementById('log_user').value.trim();
-            const pass = document.getElementById('log_pass').value.trim();
-            chrome.storage.local.get(['pseudo', 'password'], function(data) {
-                if((user === data.pseudo && pass === data.password) || pass === "DARIX-ELITE-2026") {
-                    chrome.storage.local.set({'estConnecte': true}, () => activerDashboard(user || data.pseudo));
-                } else {
-                    alert("Identifiants incorrects.");
-                }
-            });
-        });
-    }
-
-    // --- Menu Profil & Déconnexion ---
-    const badge = document.getElementById('openMenu');
-    const menu = document.getElementById('menu_profil');
-    if(badge && menu) {
-        badge.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-        });
-    }
-    document.addEventListener('click', () => { if(menu) menu.style.display = 'none'; });
-
-    const btnOut = document.getElementById('deconnexion');
-    if(btnOut) {
-        btnOut.addEventListener('click', () => {
-            chrome.storage.local.set({'estConnecte': false}, () => window.location.reload());
-        });
-    }
-
-    // --- Activation Dashboard ---
-    function activerDashboard(pseudo) {
-        basculerPage('dash');
-        const name = pseudo || "User";
-        if(document.getElementById('user_name_display')) document.getElementById('user_name_display').innerText = "Profil: " + name;
-        if(document.getElementById('openMenu')) document.getElementById('openMenu').innerText = name.charAt(0).toUpperCase();
-    }
-
-    // --- Animation de Scan "Elite" (Réparée) ---
-    function lancerAnimationElite() {
-        const status = document.getElementById('mainStatus');
-        const sousStatut = document.getElementById('sous-statut');
-        if(status) status.innerText = "Analyse...";
-        
-        setTimeout(() => {
-            if(status) {
-                status.innerText = "Protégé";
-                status.style.color = "#00ff88";
+            if(data.toggles) {
+                if(data.toggles.web) document.getElementById('sw_web').classList.add('sur'); else document.getElementById('sw_web').classList.remove('sur');
+                if(data.toggles.track) document.getElementById('sw_track').classList.add('sur'); else document.getElementById('sw_track').classList.remove('sur');
+                if(data.toggles.quantum) document.getElementById('sw_quantum').classList.add('sur'); else document.getElementById('sw_quantum').classList.remove('sur');
             }
-            if(sousStatut) sousStatut.innerText = "Navigation sécurisée active";
-        }, 2000);
-    }
+        } else {
+            document.getElementById('page_login').classList.add('active');
+        }
+    });
 
-    // --- Contrôle des Protections (Toggles) ---
     document.querySelectorAll('.changer').forEach(sw => {
         sw.addEventListener('click', function() {
             this.classList.toggle('sur');
+            saveAppState();
         });
+    });
+
+    document.getElementById('btn_site_link')?.addEventListener('click', () => {
+        chrome.tabs.create({ url: 'https://sites.google.com/view/root-defender-official/accueil' });
     });
 });
